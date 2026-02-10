@@ -1,1 +1,77 @@
-/* Add your CSS here */
+/* Set sans-serif font for the entire page */
+body {
+  font-family: sans-serif;
+}
+
+/* Style the header section with a blue background */
+header {
+  background-color: #0071C5; /* Intel blue color */
+  color: white; /* Make text white so it's readable on blue */
+  padding: 40px 20px; /* Add some space inside the header */
+  text-align: center; /* Center the content */
+}
+
+#main-title {
+  font-size: 64px; /* Make the main title larger */
+  margin: 20px 0; /* Add some space above and below the title */
+}
+
+/* Style the Intel logo */
+header img {
+  width: 120px; /* Make the logo smaller */
+  height: auto; /* Keep the aspect ratio */
+  display: block; /* Make it a block element so margin auto works */
+  margin: 0 auto 20px; /* Center it and add bottom spacing */
+}
+
+/* Style the timeline section with flexbox */
+section {
+  display: flex; /* Use flexbox layout */
+  flex-wrap: wrap; /* Allow cards to wrap to the next line */
+  gap: 20px; /* Add space between cards */
+  padding: 40px 20px; /* Add padding around the section */
+  justify-content: center; /* Center the boxes horizontally */
+}
+
+/* Style the timeline cards */
+section div {
+  flex: 0 0 calc((100% - 80px) / 5);    /* 5 boxes, accounting for 4 gaps of 20px each */
+  aspect-ratio: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Style images in the cards */
+section div img {
+  width: 100%; /* Make image fill the card */
+  height: auto; /* Keep aspect ratio */
+  border-radius: 4px; /* Slight rounding on edges */
+}
+
+/* Hide the card description (h3 and p) by default */
+section div h3,
+section div p {
+  display: none; /* Hide these elements initially */
+}
+
+/* Show the description when hovering over the card */
+section div:hover h3,
+section div:hover p {
+  display: block; /* Show these elements on hover */
+}
+
+/* Add blue hue on hover */
+section div:hover {
+  background-color: #E6F2FF; /* Light blue background on hover */
+}
+
+/* Style the timeline hint text */
+#timeline-hint {
+  text-align: center; /* Center the text */
+  padding: 20px; /* Add some spacing */
+}
+
+
