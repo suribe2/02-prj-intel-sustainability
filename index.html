@@ -404,5 +404,529 @@
   <!-- Custom JavaScript -->
   <script src="script.js"></script>
 
+  // ===================================
+// Intel Sustainability Timeline JavaScript
+// Horizontal Scrollable Version
+// ===================================
+
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+  
+  // ===================================
+  // Horizontal Scroll Navigation
+  // ===================================
+  
+  const scrollContainer = document.querySelector('.timeline-scroll-container');
+  const scrollLeftBtn = document.getElementById('scrollLeftBtn');
+  const scrollRightBtn = document.getElementById('scrollRightBtn');
+  const timelineCards = document.querySelectorAll('.timeline-card-horizontal');
+  
+  if (scrollContainer && scrollLeftBtn && scrollRightBtn) {
+    
+    // Scroll amount (one card width + gap)
+    const getScrollAmount = () => {
+      const cardWidth = timelineCards[0]?.offsetWidth || 350;
+      const gap = 32; // 2rem = 32px
+      return cardWidth + gap;
+    };
+    
+    // Scroll Left
+    scrollLeftBtn.addEventListener('click', function() {
+      scrollContainer.scrollBy({
+        left: -getScrollAmount(),
+        behavior: 'smooth'
+      });
+    });
+    
+    // Scroll Right
+    scrollRightBtn.addEventListener('click', function() {
+      scrollContainer.scrollBy({
+        left: getScrollAmount(),
+        behavior: 'smooth'
+      });
+    });
+    
+    // Update button states based on scroll position
+    function updateScrollButtons() {
+      const scrollLeft = scrollContainer.scrollLeft;
+      const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+      
+      // Disable left button at start
+      if (scrollLeft <= 10) {
+        scrollLeftBtn.disabled = true;
+        scrollLeftBtn.classList.add('opacity-50');
+      } else {
+        scrollLeftBtn.disabled = false;
+        scrollLeftBtn.classList.remove('opacity-50');
+      }
+      
+      // Disable right button at end
+      if (scrollLeft >= maxScroll - 10) {
+        scrollRightBtn.disabled = true;
+        scrollRightBtn.classList.add('opacity-50');
+      } else {
+        scrollRightBtn.disabled = false;
+        scrollRightBtn.classList.remove('opacity-50');
+      }
+    }
+    
+    // Listen for scroll events
+    scrollContainer.addEventListener('scroll', updateScrollButtons);
+    
+    // Initial button state
+    updateScrollButtons();
+    
+    // Update on window resize
+    window.addEventListener('resize', updateScrollButtons);
+  }
+  
+  
+  // ===================================
+  // Keyboard Navigation for Scroll Container
+  // ===================================
+  
+  if (scrollContainer) {
+    scrollContainer.addEventListener('keydown', function(e) {
+      const scrollAmount = getScrollAmount();
+      
+      switch(e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          scrollContainer.scrollBy({
+            left: -scrollAmount,
+            behavior: 'smooth'
+          });
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          scrollContainer.scrollBy({
+            left: scrollAmount,
+            behavior: 'smooth'
+          });
+          break;
+        case 'Home':
+          e.preventDefault();
+          scrollContainer.scrollTo({
+            left: 0,
+            behavior: 'smooth'
+          });
+          break;
+        case 'End':
+          e.preventDefault();
+          scrollContainer.scrollTo({
+            left: scrollContainer.scrollWidth,
+            behavior: 'smooth'
+          });
+          break;
+      }
+    });
+  }
+  
+  
+  // ===================================
+  // Mouse Drag Scrolling
+  // ===================================
+  
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+  
+  if (scrollContainer) {
+    scrollContainer.addEventListener('mousedown', (e) => {
+      // Only drag if clicking on the container itself, not cards
+      if (e.target === scrollContainer || e.target.classList.contains('timeline-line')) {
+        isDown = true;
+        scrollContainer.style.cursor = 'grabbing';
+        startX = e.pageX - scrollContainer.offsetLeft;
+        scrollLeft = scrollContainer.scrollLeft;
+      }
+    });
+    
+    scrollContainer.addEventListener('mouseleave', () => {
+      isDown = false;
+      scrollContainer.style.cursor = 'grab';
+    });
+    
+    scrollContainer.addEventListener('mouseup', () => {
+      isDown = false;
+      scrollContainer.style.cursor = 'grab';
+    });
+    
+    scrollContainer.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - scrollContainer.offsetLeft;
+      const walk = (x - startX) * 2; // Scroll speed multiplier
+      scrollContainer.scrollLeft = scrollLeft - walk;
+    });
+    
+    // Set initial cursor
+    scrollContainer.style.cursor = 'grab';
+  }
+  
+  
+  // ===================================
+  // Form Validation and Submission
+  // ===================================
+  
+  const contactForm = document.getElementById('contactForm');
+  const successMessage = document.getElementById('successMessage');
+  
+  if (contactForm) {
+    contactForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Check form validity
+      if (contactForm.checkValidity()) {
+        // Form is valid - show success message
+        handleFormSubmission();
+      } else {
+        // Form is invalid - show validation errors
+        contactForm.classList.add('was-validated');
+        
+        // Find first invalid field and focus it
+        const firstInvalidField = contactForm.querySelector(':invalid');
+        if (firstInvalidField) {
+          firstInvalidField.focus();
+        }
+      }
+    });
+  }
+  
+  /**
+   * Handle successful form submission
+   */
+  function handleFormSubmission() {
+    // Get form data
+    const formData = new FormData(contactForm);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Log form data (in production, this would send to a server)
+    console.log('Form submitted with data:', data);
+    
+    // Show success message
+    successMessage.classList.remove('d-none');
+    
+    // Reset form
+    contactForm.reset();
+    contactForm.classList.remove('was-validated');
+    
+    // Scroll to success message
+    successMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    
+    // Focus success message for screen readers
+    successMessage.setAttribute('tabindex', '-1');
+    successMessage.focus();
+    
+    // Hide success message after 5 seconds
+    setTimeout(() => {
+      successMessage.classList.add('d-none');
+    }, 5000);
+  }
+  
+  
+  // ===================================
+  // Scroll Progress Indicator (Optional)
+  // ===================================
+  
+  function createScrollIndicator() {
+    const indicator = document.createElement('div');
+    indicator.className = 'scroll-progress-indicator';
+    indicator.setAttribute('role', 'progressbar');
+    indicator.setAttribute('aria-label', 'Timeline scroll progress');
+    indicator.setAttribute('aria-valuemin', '0');
+    indicator.setAttribute('aria-valuemax', '100');
+    
+    const wrapper = document.querySelector('.timeline-scroll-wrapper');
+    if (wrapper) {
+      wrapper.insertBefore(indicator, wrapper.firstChild);
+    }
+    
+    return indicator;
+  }
+  
+  const scrollIndicator = createScrollIndicator();
+  
+  if (scrollContainer && scrollIndicator) {
+    scrollContainer.addEventListener('scroll', function() {
+      const scrollPercent = (scrollContainer.scrollLeft / 
+        (scrollContainer.scrollWidth - scrollContainer.clientWidth)) * 100;
+      scrollIndicator.style.width = scrollPercent + '%';
+      scrollIndicator.setAttribute('aria-valuenow', Math.round(scrollPercent));
+    });
+  }
+  
+  
+  // ===================================
+  // Smooth Scrolling for Anchor Links
+  // ===================================
+  
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const targetId = this.getAttribute('href');
+      if (targetId !== '#') {
+        e.preventDefault();
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          targetElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+          
+          // Set focus to target for accessibility
+          targetElement.setAttribute('tabindex', '-1');
+          targetElement.focus();
+        }
+      }
+    });
+  });
+  
+  
+  // ===================================
+  // Individual Card Keyboard Navigation
+  // ===================================
+  
+  timelineCards.forEach((card, index) => {
+    // Make cards focusable
+    const cardElement = card.querySelector('.card');
+    if (cardElement) {
+      cardElement.setAttribute('tabindex', '0');
+      
+      cardElement.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          // Card click action (could expand card, show modal, etc.)
+          console.log('Card selected:', index);
+        }
+      });
+      
+      // Scroll card into view when focused
+      cardElement.addEventListener('focus', function() {
+        card.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center'
+        });
+      });
+    }
+  });
+  
+  
+  // ===================================
+  // Form Field Real-Time Validation
+  // ===================================
+  
+  const formInputs = contactForm?.querySelectorAll('input, textarea, select');
+  
+  formInputs?.forEach(input => {
+    input.addEventListener('blur', function() {
+      if (contactForm.classList.contains('was-validated')) {
+        validateField(this);
+      }
+    });
+    
+    input.addEventListener('input', function() {
+      if (contactForm.classList.contains('was-validated')) {
+        validateField(this);
+      }
+    });
+  });
+  
+  /**
+   * Validate individual form field
+   */
+  function validateField(field) {
+    if (field.checkValidity()) {
+      field.classList.remove('is-invalid');
+      field.classList.add('is-valid');
+    } else {
+      field.classList.remove('is-valid');
+      field.classList.add('is-invalid');
+    }
+  }
+  
+  
+  // ===================================
+  // Accessibility: Announce Dynamic Content
+  // ===================================
+  
+  /**
+   * Create live region for screen reader announcements
+   */
+  function createLiveRegion() {
+    const liveRegion = document.createElement('div');
+    liveRegion.setAttribute('role', 'status');
+    liveRegion.setAttribute('aria-live', 'polite');
+    liveRegion.setAttribute('aria-atomic', 'true');
+    liveRegion.className = 'visually-hidden';
+    liveRegion.id = 'liveRegion';
+    document.body.appendChild(liveRegion);
+    return liveRegion;
+  }
+  
+  const liveRegion = createLiveRegion();
+  
+  /**
+   * Announce message to screen readers
+   */
+  function announceToScreenReader(message) {
+    liveRegion.textContent = message;
+    setTimeout(() => {
+      liveRegion.textContent = '';
+    }, 1000);
+  }
+  
+  // Announce scroll position changes
+  let scrollTimeout;
+  if (scrollContainer) {
+    scrollContainer.addEventListener('scroll', function() {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const currentCard = Math.round(scrollContainer.scrollLeft / getScrollAmount()) + 1;
+        const totalCards = timelineCards.length;
+        announceToScreenReader(`Viewing card ${currentCard} of ${totalCards}`);
+      }, 500);
+    });
+  }
+  
+  
+  // ===================================
+  // Email Validation Enhancement
+  // ===================================
+  
+  const emailInput = document.getElementById('email');
+  
+  if (emailInput) {
+    emailInput.addEventListener('blur', function() {
+      const emailValue = this.value.trim();
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
+      if (emailValue && !emailPattern.test(emailValue)) {
+        this.setCustomValidity('Please enter a valid email address');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+  }
+  
+  
+  // ===================================
+  // Responsive Image Loading
+  // ===================================
+  
+  // Add loading="lazy" to images for better performance
+  const images = document.querySelectorAll('.timeline-card-horizontal img');
+  images.forEach(img => {
+    img.setAttribute('loading', 'lazy');
+  });
+  
+  
+  // ===================================
+  // Touch Swipe Support for Mobile
+  // ===================================
+  
+  let touchStartX = 0;
+  let touchEndX = 0;
+  
+  if (scrollContainer) {
+    scrollContainer.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    scrollContainer.addEventListener('touchend', function(e) {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          // Swiped left - scroll right
+          scrollContainer.scrollBy({
+            left: getScrollAmount(),
+            behavior: 'smooth'
+          });
+        } else {
+          // Swiped right - scroll left
+          scrollContainer.scrollBy({
+            left: -getScrollAmount(),
+            behavior: 'smooth'
+          });
+        }
+      }
+    }
+  }
+  
+  
+  // ===================================
+  // Intersection Observer for Cards
+  // ===================================
+  
+  const observerOptions = {
+    root: scrollContainer,
+    threshold: 0.5,
+    rootMargin: '0px'
+  };
+  
+  const cardObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        // Announce which card is in view
+        const cardIndex = Array.from(timelineCards).indexOf(entry.target) + 1;
+        console.log(`Card ${cardIndex} is in view`);
+      } else {
+        entry.target.classList.remove('in-view');
+      }
+    });
+  }, observerOptions);
+  
+  // Observe all cards
+  timelineCards.forEach(card => {
+    cardObserver.observe(card);
+  });
+  
+  
+  // ===================================
+  // Console Welcome Message
+  // ===================================
+  
+  console.log('%c🌍 Intel Sustainability Timeline', 'color: #0071c5; font-size: 20px; font-weight: bold;');
+  console.log('%cHorizontal Scrollable Timeline', 'color: #666; font-size: 14px;');
+  console.log('%cKeyboard: Arrow Left/Right to scroll | Home/End to jump', 'color: #666; font-size: 12px;');
+  console.log('%cMouse: Click and drag to scroll', 'color: #666; font-size: 12px;');
+  
+});
+
+
+// ===================================
+// CSS Injection for Scroll Progress Indicator
+// ===================================
+
+const style = document.createElement('style');
+style.textContent = `
+  .scroll-progress-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(to right, var(--intel-blue), var(--intel-light-blue));
+    z-index: 10;
+    transition: width 0.3s ease;
+    border-radius: 2px;
+  }
+  
+  .timeline-card-horizontal.in-view .timeline-dot {
+    background: var(--intel-blue);
+    border-color: var(--intel-dark-blue);
+    box-shadow: 0 0 20px rgba(0, 113, 197, 0.6);
+  }
+`;
+document.head.appendChild(style);
+
 </body>
 </html>
