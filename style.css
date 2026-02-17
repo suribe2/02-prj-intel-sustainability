@@ -1,77 +1,543 @@
-/* Set sans-serif font for the entire page */
+/* ===================================
+   Intel Sustainability Timeline Styles
+   Horizontal Scrollable Version
+   =================================== */
+
+/* Root Variables - Intel Brand Colors */
+:root {
+  --intel-blue: #0071c5;
+  --intel-dark-blue: #003c71;
+  --intel-light-blue: #0095da;
+  --text-dark: #333;
+  --text-light: #666;
+  --bg-light: #f8f9fa;
+  --transition-speed: 0.3s;
+  --timeline-line-color: #0071c5;
+  --timeline-dot-size: 20px;
+}
+
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  font-family: sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--text-dark);
+  overflow-x: hidden;
 }
 
-/* Style the header section with a blue background */
-header {
-  background-color: #0071C5; /* Intel blue color */
-  color: white; /* Make text white so it's readable on blue */
-  padding: 40px 20px; /* Add some space inside the header */
-  text-align: center; /* Center the content */
-}
-
-#main-title {
-  font-size: 64px; /* Make the main title larger */
-  margin: 20px 0; /* Add some space above and below the title */
-}
-
-/* Style the Intel logo */
-header img {
-  width: 120px; /* Make the logo smaller */
-  height: auto; /* Keep the aspect ratio */
-  display: block; /* Make it a block element so margin auto works */
-  margin: 0 auto 20px; /* Center it and add bottom spacing */
-}
-
-/* Style the timeline section with flexbox */
-section {
-  display: flex; /* Use flexbox layout */
-  flex-wrap: wrap; /* Allow cards to wrap to the next line */
-  gap: 20px; /* Add space between cards */
-  padding: 40px 20px; /* Add padding around the section */
-  justify-content: center; /* Center the boxes horizontally */
-}
-
-/* Style the timeline cards */
-section div {
-  flex: 0 0 calc((100% - 80px) / 5);    /* 5 boxes, accounting for 4 gaps of 20px each */
-  aspect-ratio: 1;
+/* Skip to Main Content Link (Accessibility) */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--intel-blue);
+  color: white;
   padding: 8px;
-  border: 1px solid #ddd;
+  text-decoration: none;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Header Styles */
+header {
+  background: linear-gradient(135deg, var(--intel-blue) 0%, var(--intel-dark-blue) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.3;
+}
+
+.intel-logo {
+  max-width: 200px;
+  height: auto;
+  filter: brightness(0) invert(1);
+}
+
+/* Bootstrap Color Override */
+.bg-primary {
+  background-color: var(--intel-blue) !important;
+}
+
+.text-primary {
+  color: var(--intel-blue) !important;
+}
+
+.btn-primary {
+  background-color: var(--intel-blue);
+  border-color: var(--intel-blue);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--intel-dark-blue);
+  border-color: var(--intel-dark-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 113, 197, 0.3);
+}
+
+.btn-outline-primary {
+  color: var(--intel-blue);
+  border-color: var(--intel-blue);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: var(--intel-blue);
+  border-color: var(--intel-blue);
+  color: white;
+}
+
+/* ===================================
+   HORIZONTAL SCROLLABLE TIMELINE
+   =================================== */
+
+.timeline-scroll-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.timeline-scroll-container {
+  display: flex;
+  gap: 2rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  padding: 3rem 1rem 2rem;
+  position: relative;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom Scrollbar */
+.timeline-scroll-container::-webkit-scrollbar {
+  height: 12px;
+}
+
+.timeline-scroll-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.timeline-scroll-container::-webkit-scrollbar-thumb {
+  background: var(--intel-blue);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.timeline-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: var(--intel-dark-blue);
+}
+
+/* Firefox Scrollbar */
+.timeline-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--intel-blue) #f1f1f1;
+}
+
+/* Timeline Line */
+.timeline-line {
+  position: absolute;
+  top: 2.5rem;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(to right, 
+    var(--intel-blue) 0%, 
+    var(--intel-light-blue) 50%, 
+    var(--intel-blue) 100%);
+  z-index: 0;
+  border-radius: 2px;
+}
+
+/* Individual Timeline Cards */
+.timeline-card-horizontal {
+  position: relative;
+  flex: 0 0 350px;
+  min-width: 350px;
+  max-width: 350px;
+  scroll-snap-align: start;
+  padding-top: 2rem;
+}
+
+.timeline-card-horizontal .card {
+  border: none;
+  border-radius: 12px;
+  transition: transform var(--transition-speed) ease, 
+              box-shadow var(--transition-speed) ease;
+  height: 100%;
+  background: white;
+}
+
+.timeline-card-horizontal .card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15) !important;
+}
+
+.timeline-card-horizontal .card:focus-within {
+  outline: 3px solid var(--intel-blue);
+  outline-offset: 4px;
+}
+
+/* Timeline Dots */
+.timeline-dot {
+  position: absolute;
+  top: calc(2.5rem - var(--timeline-dot-size) / 2 + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--timeline-dot-size);
+  height: var(--timeline-dot-size);
+  background: white;
+  border: 4px solid var(--intel-blue);
+  border-radius: 50%;
+  z-index: 1;
+  transition: all var(--transition-speed) ease;
+  box-shadow: 0 2px 8px rgba(0, 113, 197, 0.3);
+}
+
+.timeline-card-horizontal:hover .timeline-dot {
+  background: var(--intel-blue);
+  border-color: var(--intel-dark-blue);
+  transform: translateX(-50%) scale(1.3);
+  box-shadow: 0 4px 12px rgba(0, 113, 197, 0.5);
+}
+
+/* Card Content */
+.timeline-card-horizontal .card-body {
+  padding: 1.5rem;
+}
+
+.timeline-card-horizontal img {
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform var(--transition-speed) ease;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
 }
 
-
-/* Style images in the cards */
-section div img {
-  width: 100%; /* Make image fill the card */
-  height: auto; /* Keep aspect ratio */
-  border-radius: 4px; /* Slight rounding on edges */
+.timeline-card-horizontal .card:hover img {
+  transform: scale(1.05);
 }
 
-/* Hide the card description (h3 and p) by default */
-section div h3,
-section div p {
-  display: none; /* Hide these elements initially */
+.timeline-card-horizontal h3 {
+  color: var(--intel-blue);
+  font-weight: 700;
 }
 
-/* Show the description when hovering over the card */
-section div:hover h3,
-section div:hover p {
-  display: block; /* Show these elements on hover */
+.timeline-card-horizontal h4 {
+  color: var(--intel-dark-blue);
 }
 
-/* Add blue hue on hover */
-section div:hover {
-  background-color: #E6F2FF; /* Light blue background on hover */
+.timeline-card-horizontal .bi {
+  flex-shrink: 0;
+  transition: transform var(--transition-speed) ease;
 }
 
-/* Style the timeline hint text */
-#timeline-hint {
-  text-align: center; /* Center the text */
-  padding: 20px; /* Add some spacing */
+.timeline-card-horizontal .card:hover .bi {
+  transform: scale(1.1);
 }
 
+/* Navigation Buttons */
+.timeline-nav-buttons {
+  margin-top: 2rem;
+}
 
+.timeline-nav-buttons .btn {
+  transition: all 0.3s ease;
+}
+
+.timeline-nav-buttons .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Form Styles */
+.contact-section {
+  background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--intel-blue);
+  box-shadow: 0 0 0 0.25rem rgba(0, 113, 197, 0.25);
+}
+
+.form-label {
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.invalid-feedback {
+  font-size: 0.875rem;
+}
+
+/* Form Accessibility Enhancements */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--intel-blue);
+  outline-offset: 2px;
+}
+
+/* Success Message */
+#successMessage {
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Footer */
+footer a:hover {
+  text-decoration: underline !important;
+  color: var(--intel-light-blue) !important;
+}
+
+/* Utility Classes */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Scroll Indicator Animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .timeline-card-horizontal .card {
+    border: 2px solid var(--text-dark);
+  }
+  
+  .btn-primary {
+    border: 2px solid var(--text-dark);
+  }
+  
+  .timeline-line {
+    background: var(--text-dark);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .timeline-scroll-container {
+    scroll-behavior: auto;
+  }
+}
+
+/* Responsive Design Enhancements */
+@media (max-width: 768px) {
+  .intel-logo {
+    max-width: 150px;
+  }
+  
+  #main-title {
+    font-size: 2rem;
+  }
+  
+  .timeline-card-horizontal {
+    flex: 0 0 300px;
+    min-width: 300px;
+    max-width: 300px;
+  }
+  
+  .timeline-card-horizontal img {
+    height: 180px;
+  }
+  
+  .timeline-scroll-container {
+    gap: 1.5rem;
+    padding: 3rem 0.5rem 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .intel-logo {
+    max-width: 120px;
+  }
+  
+  #main-title {
+    font-size: 1.75rem;
+  }
+  
+  .timeline-card-horizontal {
+    flex: 0 0 280px;
+    min-width: 280px;
+    max-width: 280px;
+  }
+  
+  .timeline-card-horizontal .card-body {
+    padding: 1rem;
+  }
+  
+  .timeline-card-horizontal img {
+    height: 160px;
+  }
+  
+  .timeline-scroll-container {
+    gap: 1rem;
+  }
+  
+  .timeline-nav-buttons .btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  header {
+    background: white;
+    color: black;
+  }
+  
+  .timeline-scroll-container {
+    display: block;
+    overflow: visible;
+  }
+  
+  .timeline-card-horizontal {
+    page-break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+  
+  .timeline-card-horizontal .card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+  
+  .timeline-nav-buttons,
+  .contact-section,
+  footer {
+    display: none;
+  }
+}
+
+/* Focus Visible for Keyboard Navigation */
+*:focus-visible {
+  outline: 3px solid var(--intel-blue);
+  outline-offset: 3px;
+}
+
+/* Timeline Container Focus */
+.timeline-scroll-container:focus {
+  outline: 3px solid var(--intel-blue);
+  outline-offset: 4px;
+}
+
+/* Touch Device Optimization */
+@media (hover: none) and (pointer: coarse) {
+  .timeline-card-horizontal .card:hover {
+    transform: none;
+  }
+  
+  .timeline-card-horizontal .card:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Loading Animation */
+.timeline-card-horizontal {
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger animation delays */
+.timeline-card-horizontal:nth-child(1) { animation-delay: 0.1s; }
+.timeline-card-horizontal:nth-child(2) { animation-delay: 0.2s; }
+.timeline-card-horizontal:nth-child(3) { animation-delay: 0.3s; }
+.timeline-card-horizontal:nth-child(4) { animation-delay: 0.4s; }
+.timeline-card-horizontal:nth-child(5) { animation-delay: 0.5s; }
+.timeline-card-horizontal:nth-child(6) { animation-delay: 0.6s; }
+.timeline-card-horizontal:nth-child(7) { animation-delay: 0.7s; }
+.timeline-card-horizontal:nth-child(8) { animation-delay: 0.8s; }
+.timeline-card-horizontal:nth-child(9) { animation-delay: 0.9s; }
+.timeline-card-horizontal:nth-child(10) { animation-delay: 1.0s; }
+
+/* Gradient Overlay on Scroll Edges (Visual Hint) */
+.timeline-scroll-wrapper::before,
+.timeline-scroll-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.timeline-scroll-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(255,255,255,0.9), transparent);
+}
+
+.timeline-scroll-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(255,255,255,0.9), transparent);
+}
+
+/* Hide gradients on mobile */
+@media (max-width: 768px) {
+  .timeline-scroll-wrapper::before,
+  .timeline-scroll-wrapper::after {
+    display: none;
+  }
+}
